@@ -1,0 +1,106 @@
+'use client'
+
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
+function Login() {
+  const router = useRouter();
+
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const onLogin = async (e) => {
+    e.preventDefault(); // 🔥 important
+
+    try {
+      setLoading(true);
+
+      await axios.post("/api/users/login", user);
+
+      toast.success("Login successful 🎉");
+      router.push("/profile");
+
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Login failed";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setButtonDisabled(!(user.email && user.password));
+  }, [user]);
+
+  return (
+    <div className="bg-gray-900 flex justify-center items-center min-h-screen">
+      <div className="bg-gray-600 rounded-lg p-8 shadow-lg max-w-sm w-full">
+        <h2 className="text-center text-3xl text-white mb-6 font-bold">
+          {loading ? "Processing..." : "Login"}
+        </h2>
+
+        <form onSubmit={onLogin}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Email
+            </label>
+            <input
+              value={user.email}
+              onChange={(e) =>
+                setUser({ ...user, email: e.target.value })
+              }
+              placeholder="email"
+              className="w-full px-3 py-2 bg-gray-600 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="email"
+            />
+          </div>
+
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Password
+            </label>
+            <input
+              value={user.password}
+              onChange={(e) =>
+                setUser({ ...user, password: e.target.value })
+              }
+              placeholder="password"
+              className="w-full px-3 py-2 bg-gray-600 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={buttonDisabled || loading}
+            className={`rounded-md py-3 w-full text-white transition ${
+              buttonDisabled || loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-yellow-500 hover:bg-yellow-600"
+            }`}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <div className="text-center mt-4 text-sm text-gray-200">
+            Don’t have an account?{" "}
+            <Link href="/signup" className="text-yellow-400 underline">
+              Signup
+            </Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
