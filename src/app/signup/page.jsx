@@ -12,6 +12,7 @@ function Signup() {
   const [user, setUser] = useState({
     email: "",
     password: "",
+    username: "",
   });
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -41,6 +42,7 @@ function Signup() {
     const isValid =
       user.email &&
       user.password &&
+      user.username;
 
     setButtonDisabled(!isValid);
   }, [user]);
@@ -53,7 +55,20 @@ function Signup() {
         </h2>
 
         <form onSubmit={onSignup}>
-          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Username
+            </label>
+            <input
+              value={user.username}
+              onChange={(e) =>
+                setUser({ ...user, username: e.target.value })
+              }
+              placeholder="username"
+              className="w-full px-3 py-2 bg-gray-600 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+            />
+          </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-300 mb-2">
